@@ -37,7 +37,7 @@ services:
       - key: SMTP_PASS
         sync: false
       - key: EMAIL_FROM
-        value: "Click'N'Rest <bookings@clicknrest.co.uk>"
+        value: "Click'N'Rest <inquiries@clicknrest.co.uk>"
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
