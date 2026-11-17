@@ -1,0 +1,44 @@
+# Render Blueprint for the Click'N'Rest website.
+# In Render: New > Blueprint, pick this repository, then fill in the secret values it asks for.
+services:
+  - type: web
+    name: clicknrest
+    runtime: node
+    plan: starter # a persistent disk needs a paid plan
+    region: frankfurt # closest Render region to London
+    buildCommand: npm ci && npm run build
+    # db:live only fills an EMPTY database (first start); after that it does nothing.
+    startCommand: npm run db:live && npm start
+    healthCheckPath: /
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATA_DIR
+        value: /var/data
+      - key: SITE_URL
+        value: https://clicknrest.co.uk
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # Left empty until steps 4 (email) and 7 (Stripe). Until then the site runs in demo mode.
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        value: "Click'N'Rest <bookings@clicknrest.co.uk>"
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
