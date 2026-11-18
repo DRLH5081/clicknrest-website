@@ -587,3 +587,42 @@ export async function changePassword(formData: FormData) {
   getDb().prepare("UPDATE admin_users SET password_hash = ?, email = ?, must_change_password = 0 WHERE id = ?").run(hashPassword(next), email, admin.id);
   go(back, { ok: "Sign-in details updated." });
 }
+
+// ------------------------------------------------------------------ Smoobu
+
+export async function saveSmoobuLinks(formData: FormData) {
+  await requireAdmin();
+  const db = getDb();
+  const props = db.prepare("SELECT id FROM properties").all() as { id: number }[];
+  const seen = new Set<number>();
+  for (const { id } of props) {
+    const raw = str(formData, `apt_${id}`, 20);
+    const apt = raw ? Number(raw) : null;
+    if (apt !== null && (!Number.isInteger(apt) || apt <= 0)) go("/admin/smoobu", { error: "Please choose a Smoobu listing from the list." });
+    if (apt !== null && seen.has(apt)) go("/admin/smoobu", { error: "Each Smoobu listing can only be linked to one apartment." });
+    if (apt !== null) seen.add(apt);
+  }
+  db.transaction(() => {
+    for (const { id } of props) {
+      const raw = str(formData, `apt_${id}`, 20);
+      const apt = raw ? Number(raw) : null;
+      const prev = db.prepare("SELECT smoobu_apartment_id FROM properties WHERE id = ?").get(id) as { smoobu_apartment_id: number | null };
+      if (prev.smoobu_apartment_id !== apt) {
+        db.prepare("UPDATE properties SET smoobu_apartment_id = ?, updated_at = ? WHERE id = ?").run(apt, nowIso(), id);
+        db.prepare("DELETE FROM smoobu_nights WHERE property_id = ?").run(id);
+      }
+    }
+  })();
+  const { syncAll } = await import("@/lib/smoobu");
+  const st = await syncAll();
+  refreshPublic();
+  go("/admin/smoobu", st.error ? { error: `Links saved, but the sync failed: ${st.error}` } : { ok: "Links saved and prices synced from Smoobu." });
+}
+
+export async function syncSmoobuNow() {
+  await requireAdmin();
+  const { syncAll } = await import("@/lib/smoobu");
+  const st = await syncAll();
+  refreshPublic();
+  go("/admin/smoobu", st.error ? { error: st.error } : { ok: `Synced ${st.properties} apartments from Smoobu.` });
+}

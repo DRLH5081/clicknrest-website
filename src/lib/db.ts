@@ -211,6 +211,16 @@ CREATE TABLE IF NOT EXISTS email_outbox (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS smoobu_nights (
+  property_id INTEGER NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
+  night TEXT NOT NULL,
+  price INTEGER,
+  min_stay INTEGER,
+  available INTEGER NOT NULL DEFAULT 1,
+  fetched_at TEXT NOT NULL,
+  PRIMARY KEY (property_id, night)
+);
+
 CREATE TABLE IF NOT EXISTS media (
   key TEXT PRIMARY KEY,
   width INTEGER NOT NULL,
@@ -226,6 +236,8 @@ type GlobalWithDb = typeof globalThis & { __faronDb?: Database.Database };
 function migrate(db: Database.Database) {
   const has = (table: string, column: string) => (db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column);
   if (!has("bookings", "payment_method")) db.exec("ALTER TABLE bookings ADD COLUMN payment_method TEXT NOT NULL DEFAULT 'card'");
+  if (!has("properties", "smoobu_apartment_id")) db.exec("ALTER TABLE properties ADD COLUMN smoobu_apartment_id INTEGER");
+  if (!has("bookings", "smoobu_reservation_id")) db.exec("ALTER TABLE bookings ADD COLUMN smoobu_reservation_id INTEGER");
 }
 
 function open(): Database.Database {

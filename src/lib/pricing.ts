@@ -2,6 +2,7 @@ import { addMonths, dayOfWeek, diffDays, isIsoDate, nightsBetween, todayIn } fro
 import type { Property, Season } from "./properties";
 import { getSetting, type TaxSettings } from "./settings";
 import { isRangeFree, releaseExpiredHolds } from "./availability";
+import { smoobuNight } from "./smoobu";
 
 export type NightPrice = { night: string; rate: number; label: string };
 
@@ -41,7 +42,10 @@ export function seasonFor(seasons: Season[], night: string): Season | undefined 
   return match;
 }
 
-export function nightlyRate(p: Pick<Property, "base_rate" | "weekend_rate" | "seasons">, night: string): NightPrice {
+export function nightlyRate(p: Pick<Property, "id" | "base_rate" | "weekend_rate" | "seasons">, night: string): NightPrice {
+  // Linked to Smoobu: its price (from PriceLabs) wins over the dashboard rates.
+  const sm = smoobuNight(p.id, night);
+  if (sm?.price) return { night, rate: sm.price, label: "Nightly rate" };
   const season = seasonFor(p.seasons, night);
   if (season) return { night, rate: season.nightly_rate, label: season.name };
   const dow = dayOfWeek(night);
@@ -49,7 +53,9 @@ export function nightlyRate(p: Pick<Property, "base_rate" | "weekend_rate" | "se
   return { night, rate: p.base_rate, label: "Standard" };
 }
 
-export function minNightsFor(p: Pick<Property, "min_nights" | "seasons">, checkIn: string): number {
+export function minNightsFor(p: Pick<Property, "id" | "min_nights" | "seasons">, checkIn: string): number {
+  const sm = smoobuNight(p.id, checkIn);
+  if (sm?.min_stay) return Math.max(1, sm.min_stay);
   const season = seasonFor(p.seasons, checkIn);
   return Math.max(1, season?.min_nights ?? p.min_nights);
 }

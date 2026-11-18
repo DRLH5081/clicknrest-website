@@ -1,4 +1,5 @@
 import { getDb } from "./db";
+import { smoobuEnabled } from "./smoobu";
 
 export type PropertyStatus = "draft" | "published" | "archived";
 
@@ -34,6 +35,7 @@ export type PropertyRow = {
   meta_title: string;
   meta_description: string;
   is_demo: number;
+  smoobu_apartment_id: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -103,6 +105,13 @@ export function getPropertyById(id: number): Property | null {
 
 /** Lowest nightly price a guest could pay (base, weekend or any current/future season). */
 export function fromPrice(p: Property, today: string): number {
+  if (p.smoobu_apartment_id && smoobuEnabled()) {
+    // Cheapest bookable Smoobu night in the next 90 days.
+    const row = getDb()
+      .prepare("SELECT MIN(price) AS m FROM smoobu_nights WHERE property_id = ? AND night >= ? AND night < date(?, '+90 day') AND available = 1 AND price > 0")
+      .get(p.id, today, today) as { m: number | null };
+    if (row.m) return row.m;
+  }
   const rates = [p.base_rate];
   if (p.weekend_rate) rates.push(p.weekend_rate);
   for (const s of p.seasons) if (s.end_date >= today) rates.push(s.nightly_rate);

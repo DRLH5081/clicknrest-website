@@ -6,6 +6,7 @@ import { quoteStay, priceStay, computeTax, type PriceBreakdown } from "./pricing
 import { releaseExpiredHolds } from "./availability";
 import { getSetting } from "./settings";
 import { bookingReference, randomToken, sha256, safeEqual } from "./tokens";
+import { cancelInSmoobu, pushBooking } from "./smoobu";
 
 export type BookingStatus = "pending" | "confirmed" | "cancelled" | "expired";
 export type PaymentStatus = "unpaid" | "paid" | "partially_refunded" | "refunded" | "failed" | "paid_offline";
@@ -47,6 +48,7 @@ export type Booking = {
   admin_notes: string;
   needs_attention: string;
   is_demo: number;
+  smoobu_reservation_id: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -232,7 +234,10 @@ export function confirmPaidBooking(
     logEvent(b.id, attention || `Payment of ${payment.amount / 100} ${b.currency} recorded (${payment.provider}${payment.method === "pay_by_bank" ? ", Pay by Bank" : ""}). Booking confirmed.`);
     return { booking: getBookingById(b.id)!, newlyConfirmed: !attention };
   });
-  return run.immediate();
+  const result = run.immediate();
+  // Block the dates on Airbnb and other channels (runs in the background; failures are flagged on the booking).
+  if (result.newlyConfirmed) void pushBooking(result.booking.id);
+  return result;
 }
 
 /** The guest chose to pay by bank transfer: hold their dates for longer while the money arrives. */
@@ -290,6 +295,7 @@ export function cancelBooking(bookingId: number, actor: string, reason: string) 
     db.prepare("DELETE FROM booking_nights WHERE booking_id = ?").run(bookingId);
     logEvent(bookingId, `Booking cancelled${reason ? `: ${reason}` : "."}`, actor);
   })();
+  void cancelInSmoobu(bookingId);
 }
 
 export function requestCancellation(bookingId: number, reason: string) {

@@ -9,6 +9,7 @@ const ITEMS = [
   { href: "/admin/bookings", label: "Bookings", icon: "list" },
   { href: "/admin/calendar", label: "Calendar", icon: "calendar" },
   { href: "/admin/properties", label: "Properties", icon: "home" },
+  { href: "/admin/smoobu", label: "Smoobu sync", icon: "calendar" },
   { href: "/admin/enquiries", label: "Enquiries", icon: "chat" },
   { href: "/admin/content", label: "Site content", icon: "edit" },
   { href: "/admin/emails", label: "Email log", icon: "mail" },

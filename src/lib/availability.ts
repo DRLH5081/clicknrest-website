@@ -1,5 +1,6 @@
 import { getDb, nowIso } from "./db";
 import { addDays } from "./dates";
+import { smoobuUnavailableNights } from "./smoobu";
 
 /**
  * Releases nights held by checkouts that were started but never paid.
@@ -35,10 +36,14 @@ export function takenNights(propertyId: number, from: string, to: string): Night
         ORDER BY n.night`,
     )
     .all(propertyId, from, to) as { night: string; block_id: number | null; status: string | null }[];
-  return rows.map((r) => ({
+  const out: NightState[] = rows.map((r) => ({
     night: r.night,
     kind: r.block_id ? "blocked" : r.status === "pending" ? "held" : "booked",
   }));
+  // Nights sold on Airbnb or other channels, as reported by Smoobu.
+  const seen = new Set(out.map((n) => n.night));
+  for (const night of smoobuUnavailableNights(propertyId, from, to)) if (!seen.has(night)) out.push({ night, kind: "booked" });
+  return out.sort((a, b) => (a.night < b.night ? -1 : a.night > b.night ? 1 : 0));
 }
 
 export function isRangeFree(propertyId: number, checkIn: string, checkOut: string, ignoreBookingId?: number): boolean {
@@ -48,7 +53,17 @@ export function isRangeFree(propertyId: number, checkIn: string, checkOut: strin
         WHERE property_id = ? AND night >= ? AND night < ? AND (booking_id IS NULL OR booking_id != ?)`,
     )
     .get(propertyId, checkIn, checkOut, ignoreBookingId ?? -1) as { c: number };
-  return row.c === 0;
+  if (row.c > 0) return false;
+  const external = smoobuUnavailableNights(propertyId, checkIn, checkOut);
+  if (!external.length) return true;
+  // A booking we already sent to Smoobu shows as unavailable there; don't let it block itself.
+  if (ignoreBookingId) {
+    const own = new Set(
+      (getDb().prepare("SELECT night FROM booking_nights WHERE booking_id = ?").all(ignoreBookingId) as { night: string }[]).map((r) => r.night),
+    );
+    return external.every((n) => own.has(n));
+  }
+  return false;
 }
 
 /** First date on/after `from` that starts a run of at least `minNights` free nights. */

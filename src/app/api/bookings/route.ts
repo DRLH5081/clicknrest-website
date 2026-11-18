@@ -6,6 +6,7 @@ import { grantGuestAccess, rateLimit } from "@/lib/auth";
 import { paymentMode, createStripeCheckout } from "@/lib/payments";
 import { getDb } from "@/lib/db";
 import { clientIp } from "@/lib/client-ip";
+import { refreshForStay } from "@/lib/smoobu";
 
 const Body = z.object({
   slug: z.string().min(1).max(120),
@@ -40,6 +41,9 @@ export async function POST(req: Request) {
   const d = parsed.data;
   const property = getPropertyBySlug(d.slug, { publishedOnly: true });
   if (!property) return NextResponse.json({ ok: false, message: "This home is no longer available to book." }, { status: 404 });
+
+  // Re-check Smoobu for these exact nights, so a night sold on Airbnb moments ago can't be booked twice.
+  await refreshForStay(property.id, d.checkIn, d.checkOut);
 
   const mode = paymentMode();
   let bookingId: number;
