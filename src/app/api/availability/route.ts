@@ -1,3 +1,4 @@
+import { blockedByPrivateMode } from "@/lib/private-mode";
 import { NextResponse } from "next/server";
 import { getPropertyBySlug } from "@/lib/properties";
 import { releaseExpiredHolds, takenNights } from "@/lib/availability";
@@ -6,6 +7,7 @@ import { getSetting } from "@/lib/settings";
 import { nightlyRate, minNightsFor } from "@/lib/pricing";
 
 export async function GET(req: Request) {
+  if (await blockedByPrivateMode()) return Response.json({ error: "This website is not open yet." }, { status: 403 });
   const url = new URL(req.url);
   const slug = url.searchParams.get("slug") ?? "";
   const p = getPropertyBySlug(slug, { publishedOnly: true });

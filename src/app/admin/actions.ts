@@ -626,3 +626,11 @@ export async function syncSmoobuNow() {
   refreshPublic();
   go("/admin/smoobu", st.error ? { error: st.error } : { ok: `Synced ${st.properties} apartments from Smoobu.` });
 }
+
+export async function setPrivateMode(on: boolean) {
+  await requireAdmin();
+  const { setSitePrivate } = await import("@/lib/private-mode");
+  setSitePrivate(on);
+  refreshPublic();
+  go("/admin/settings?tab=site", { ok: on ? "Website is now private. The public sees a Coming soon page." : "Website is now open to the public." });
+}

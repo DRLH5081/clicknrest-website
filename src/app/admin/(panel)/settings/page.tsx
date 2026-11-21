@@ -7,7 +7,8 @@ import { siteUrl } from "@/lib/site-url";
 import { PageHeader, Panel, Field, Flash } from "@/components/admin/ui";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Icon } from "@/components/Icon";
-import { saveSettings, changePassword } from "../../actions";
+import { saveSettings, changePassword, setPrivateMode } from "../../actions";
+import { isSitePrivate } from "@/lib/private-mode";
 
 export const metadata = { title: "Settings" };
 
@@ -38,6 +39,14 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       </nav>
       <Flash ok={sp.ok} error={sp.error} />
       {sp.first && <p className="mb-6 rounded-xl bg-amber-50 p-3 text-sm text-amber-700">Welcome! Please replace the demo sign-in details with your own email and a strong password.</p>}
+
+      {tab === "site" && (
+        <Panel className="mb-6" title="Website visibility" description={isSitePrivate() ? "Private: the public sees a Coming soon page. You can still see the full site while signed in." : "Open: anyone can see the website and book."}>
+          <form action={setPrivateMode.bind(null, !isSitePrivate())}>
+            <SubmitButton>{isSitePrivate() ? "Open website to the public" : "Make website private"}</SubmitButton>
+          </form>
+        </Panel>
+      )}
 
       {tab === "site" && (
         <form action={saveSettings.bind(null, "site")}>

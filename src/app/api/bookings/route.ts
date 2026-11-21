@@ -1,3 +1,4 @@
+import { blockedByPrivateMode } from "@/lib/private-mode";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getPropertyBySlug } from "@/lib/properties";
@@ -22,6 +23,7 @@ const Body = z.object({
 });
 
 export async function POST(req: Request) {
+  if (await blockedByPrivateMode()) return Response.json({ error: "This website is not open yet." }, { status: 403 });
   const ip = await clientIp();
   if (!rateLimit(`book:${ip}`, 20, 10 * 60_000)) {
     return NextResponse.json({ ok: false, message: "Too many attempts. Please wait a few minutes and try again." }, { status: 429 });

@@ -1,8 +1,10 @@
+import { blockedByPrivateMode } from "@/lib/private-mode";
 import { NextResponse } from "next/server";
 import { getPropertyBySlug } from "@/lib/properties";
 import { quoteStay } from "@/lib/pricing";
 
 export async function POST(req: Request) {
+  if (await blockedByPrivateMode()) return Response.json({ error: "This website is not open yet." }, { status: 403 });
   let body: { slug?: unknown; checkIn?: unknown; checkOut?: unknown; guests?: unknown };
   try {
     body = await req.json();
