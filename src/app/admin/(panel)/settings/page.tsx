@@ -63,6 +63,9 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
               <Field label="Address" name="contactAddress" hint="Optional. Leave blank to hide it"><input id="contactAddress" name="contactAddress" defaultValue={s.site.contactAddress} className="input" /></Field>
               <Field label="Opening hours" name="contactHours"><input id="contactHours" name="contactHours" defaultValue={s.site.contactHours} className="input" /></Field>
               <Field label="Instagram URL (optional)" name="instagramUrl"><input id="instagramUrl" name="instagramUrl" defaultValue={s.site.instagramUrl} className="input" /></Field>
+              <Field label="Company name (as on Companies House)" name="companyName" hint="Shown in the footer, as UK law requires"><input id="companyName" name="companyName" defaultValue={s.site.companyName} className="input" /></Field>
+              <Field label="Company number" name="companyNumber"><input id="companyNumber" name="companyNumber" defaultValue={s.site.companyNumber} className="input" /></Field>
+              <Field label="Registered office address" name="registeredOffice" hint="Must match Companies House" className="md:col-span-2"><input id="registeredOffice" name="registeredOffice" defaultValue={s.site.registeredOffice} className="input" /></Field>
             </div>
             <div className="mt-6"><SubmitButton>Save</SubmitButton></div>
           </Panel>

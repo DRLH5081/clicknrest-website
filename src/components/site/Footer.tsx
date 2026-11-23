@@ -32,7 +32,15 @@ export function Footer({ site }: { site: SiteSettings }) {
       </div>
       <div className="border-t border-sand-200">
         <div className="container-x flex flex-col gap-3 py-6 text-xs text-ink-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} {site.brandName}. Demonstration content.</p>
+          <div className="space-y-1">
+            <p>© {year} {site.brandName}{site.companyName ? ` is a trading name of ${site.companyName}` : ""}.</p>
+            {site.companyName && (
+              <p>
+                Registered in England and Wales{site.companyNumber ? `, company number ${site.companyNumber}` : ""}.
+                {site.registeredOffice ? ` Registered office: ${site.registeredOffice}.` : ""}
+              </p>
+            )}
+          </div>
           <nav aria-label="Legal" className="flex flex-wrap gap-x-5 gap-y-2">
             <Link className="hover:text-ink hover:underline" href="/legal/privacy">Privacy policy</Link>
             <Link className="hover:text-ink hover:underline" href="/legal/terms">Booking terms</Link>

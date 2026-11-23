@@ -23,6 +23,12 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             Questions? Email <a href={`mailto:${site.contactEmail}`} className="text-gold-400 underline">{site.contactEmail}</a>
           </p>
         )}
+        {site.companyName && (
+          <p className="mt-16 max-w-md text-xs text-white/50">
+            {site.brandName} is a trading name of {site.companyName}, registered in England and Wales
+            {site.companyNumber ? `, company number ${site.companyNumber}` : ""}.{site.registeredOffice ? ` Registered office: ${site.registeredOffice}.` : ""}
+          </p>
+        )}
       </main>
     );
   }

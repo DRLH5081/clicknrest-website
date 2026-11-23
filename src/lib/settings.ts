@@ -13,6 +13,9 @@ export type SiteSettings = {
   contactAddress: string;
   contactHours: string;
   instagramUrl: string;
+  companyName: string; // legal entity, shown in the footer (Companies Act disclosure)
+  companyNumber: string;
+  registeredOffice: string;
 };
 
 export type RegionalSettings = {
@@ -76,6 +79,9 @@ export const DEFAULTS = {
     contactAddress: "", // Run remotely: no public address (Hannah, 2026-11-17)
     contactHours: "Every day, 9am to 9pm",
     instagramUrl: "",
+    companyName: "Click N Rest Ltd",
+    companyNumber: "17265682",
+    registeredOffice: "248 Staple Lodge Road, Birmingham, B31 3ER, England",
   } satisfies SiteSettings,
   regional: { currency: "GBP", locale: "en-GB", timeZone: "Europe/London" } satisfies RegionalSettings,
   tax: { name: "VAT", ratePercent: 20, mode: "included" } satisfies TaxSettings,

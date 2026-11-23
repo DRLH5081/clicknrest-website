@@ -3,7 +3,7 @@
  * Used by the seed for new databases and applied once to the live database by applyLaunchContent().
  */
 
-export const LAUNCH_CONTENT_VERSION = 2;
+export const LAUNCH_CONTENT_VERSION = 3;
 
 export const HOUSE_RULES = [
   "Please check in and check out at the standard times stated on your booking. If you need an earlier check-in or later check-out, this can be arranged with us in advance. Please stick to the time agreed.",
@@ -35,7 +35,9 @@ export const LEGAL_PAGES = [
     title: "Privacy policy",
     meta_title: "Privacy policy",
     meta_description: "How Click'N'Rest collects, uses and protects your personal information.",
-    body: `This policy explains how Click'N'Rest ("we", "us") uses your personal information when you visit this website, make an enquiry or book a stay with us. We are the data controller for this information under UK data protection law (the UK GDPR and the Data Protection Act 2018).
+    body: `This policy explains how Click N Rest Ltd, trading as Click'N'Rest ("we", "us"), uses your personal information when you visit this website, make an enquiry or book a stay with us. We are the data controller for this information under UK data protection law (the UK GDPR and the Data Protection Act 2018).
+
+Click N Rest Ltd is registered in England and Wales (company number 17265682). Our registered office address is shown at the bottom of every page.
 
 You can contact us about anything in this policy at the email address on our [Contact page](/contact).
 
@@ -89,7 +91,7 @@ We may update this policy. The date at the top shows when it last changed.`,
     title: "Booking terms",
     meta_title: "Booking terms and conditions",
     meta_description: "The terms that apply when you book a Click'N'Rest apartment directly.",
-    body: `These terms apply when you book an apartment directly with Click'N'Rest ("we", "us") on this website. By completing a booking, you agree to them on behalf of everyone in your party.
+    body: `These terms apply when you book an apartment directly on this website with Click N Rest Ltd, trading as Click'N'Rest ("we", "us"), a company registered in England and Wales (company number 17265682). Our registered office address is shown at the bottom of every page. By completing a booking, you agree to them on behalf of everyone in your party.
 
 ## Your booking
 
