@@ -1,4 +1,5 @@
 import { REAL_LISTINGS } from "./real-properties";
+import { HOUSE_RULES, LEGAL_PAGES, CANCELLATION_FAQ } from "../src/content/launch";
 
 /**
  * DEMONSTRATION CONTENT. Every name, description and price below is a
@@ -52,7 +53,7 @@ function seasons(year: number, summer: number, festive: number) {
   return out;
 }
 
-const RULES_COMMON = "No smoking inside the apartment\nNo parties or events\nQuiet hours from 10pm to 8am\nPlease leave the apartment as you found it";
+const RULES_COMMON = HOUSE_RULES;
 const SELF_CHECK_IN = "Self check-in with a key safe or smart lock. Your arrival guide and access code are emailed before your stay.";
 
 type Area = { town: string; latitude: number; longitude: number; area_info: string };
@@ -223,7 +224,7 @@ export const SEED_FAQS: { q: string; a: string; c: string }[] = [
   { c: "Payment", q: "How is my payment handled?", a: "Payments are processed securely by our payment provider. We never see or store your card details." },
   { c: "Payment", q: "Can I pay straight from my bank account?", a: "Yes. Choose Pay by Bank at checkout, pick your bank and approve the payment in your banking app. There's no card needed and no bank details to type, and your booking is confirmed straight away." },
   { c: "Payment", q: "When will I be charged?", a: "Placeholder answer: the full amount is due when you book, by card or Pay by Bank. Edit this answer if you take a deposit instead." },
-  { c: "Cancellations", q: "What is your cancellation policy?", a: "Full refund if you cancel at least 30 days before check-in, 50% between 14 and 30 days, and no refund within 14 days. Placeholder terms: review before launch." },
+  { c: "Cancellations", q: "What is your cancellation policy?", a: CANCELLATION_FAQ },
   { c: "Cancellations", q: "How do I cancel or change my booking?", a: "Use the link in your confirmation email, or find your booking with your reference and email address on the Manage booking page, then send a cancellation request. For changes, contact us directly." },
   { c: "Your stay", q: "What time are check-in and check-out?", a: "Check-in is from 3pm (15:00) and check-out is by 10am (10:00) at all our homes." },
   { c: "Your stay", q: "Are pets allowed?", a: "Some of our homes welcome dogs. Use the “Dogs welcome” filter on the Stays page, and please mention your dog when booking." },
@@ -241,30 +242,7 @@ export const SEED_PAGES = [
     is_draft: 0,
     body: `## A small collection, cared for personally\n\nThis is placeholder text for your story. Explain how the collection began, why you chose each home, and what you love about the places they're in.\n\n## How we look after guests\n\n- Placeholder: every home is cleaned and checked by our own team between stays.\n- Placeholder: local recommendations from people who live nearby.\n- Placeholder: one point of contact from booking to check-out.\n\n## Booking directly\n\nWhen you book with us you deal directly with the owner. There are no platform fees, and you can call or email us with any question.`,
   },
-  {
-    slug: "privacy",
-    title: "Privacy policy",
-    meta_title: "Privacy policy",
-    meta_description: "Draft privacy policy (placeholder content for review).",
-    is_draft: 1,
-    body: `${DRAFT_NOTE}\n\n## Who we are\n\n[Business name and address] is the data controller for personal information collected through this website.\n\n## What we collect\n\n- Contact details you give us when booking or enquiring (name, email address, phone number).\n- Booking details such as dates, guest numbers and messages.\n- Payment confirmations from our payment provider. We do not receive or store card numbers.\n\n## How we use it\n\nTo manage your booking, contact you about your stay, meet legal and accounting obligations, and respond to enquiries.\n\n## How long we keep it\n\n[Retention period, e.g. booking records kept for 6 years for tax purposes.]\n\n## Your rights\n\nYou can ask to access, correct or delete your personal information, subject to legal requirements. Contact us at the details on our Contact page.\n\n## Cookies\n\nThis site uses only essential cookies needed for booking and sign-in.`,
-  },
-  {
-    slug: "terms",
-    title: "Booking terms",
-    meta_title: "Booking terms and conditions",
-    meta_description: "Draft booking terms (placeholder content for review).",
-    is_draft: 1,
-    body: `${DRAFT_NOTE}\n\n## Making a booking\n\nA booking is confirmed when payment has been received and you receive a confirmation email with your booking reference.\n\n## Payment\n\n[Describe whether full payment or a deposit is taken, and when any balance is due.]\n\n## Occupancy\n\nThe number of guests must not exceed the maximum shown for the property.\n\n## Damage and security deposits\n\n[Describe any security deposit or damage policy.]\n\n## Liability\n\n[Liability wording to be provided by your adviser.]`,
-  },
-  {
-    slug: "cancellation",
-    title: "Cancellation policy",
-    meta_title: "Cancellation policy",
-    meta_description: "Draft cancellation policy (placeholder content for review).",
-    is_draft: 1,
-    body: `${DRAFT_NOTE}\n\n## If you cancel\n\n- **30 days or more before check-in:** full refund.\n- **14 to 29 days before check-in:** 50% refund.\n- **Less than 14 days before check-in:** no refund.\n\nRefunds are returned to your original payment method and usually arrive within 5 to 10 working days.\n\n## How to cancel\n\nUse the link in your confirmation email, or go to Manage booking and enter your booking reference and email address.\n\n## If we need to cancel\n\nIn the unlikely event we must cancel, you will receive a full refund.\n\n## Travel insurance\n\nWe recommend travel insurance that covers cancellation.`,
-  },
+  ...LEGAL_PAGES.map((p) => ({ ...p, is_draft: 0 })),
 ];
 
 export const DEMO_GUESTS = [

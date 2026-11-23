@@ -4,6 +4,7 @@
  * Anything marked "CHECK" was not stated in her listing text and is a best guess.
  */
 import type { SeedProperty } from "./seed-data";
+import { HOUSE_RULES, BALCONY_RULES } from "../src/content/launch";
 
 /** Alt text by photo kind. */
 const ALT: Record<string, string> = {
@@ -43,8 +44,7 @@ function photos(prefix: string, spec: string) {
 const CHECK_IN_FORM =
   "Before your stay, all guests complete a quick online check-in form. This is a standard step to verify bookings, meet legal hosting requirements and keep everyone safe. Your information is stored securely, used only for these purposes, and never shared with third parties except where required by law.";
 
-const RULES =
-  "No parties or events\nNo smoking inside the apartment\nPlease keep noise to a minimum, especially in the evening and at night, out of respect for neighbours\nThe number of guests must match the booking, and only registered guests may stay";
+const RULES = HOUSE_RULES;
 
 const PRIVATE_ACCESS =
   "## Guest access\n\nGuests have full private access to the entire apartment throughout their stay. The property is exclusively yours to enjoy, with no shared spaces or areas with other guests. You are welcome to use all areas as your own home, including the bedrooms, living area, kitchen, dining space and all amenities provided.";
@@ -222,8 +222,7 @@ export const REAL_LISTINGS: { listing: RealListing; rate: number; cleaning: numb
       max_guests: 8,
       amenities: ["wifi", "kitchen", "washer", "heating", "linen", "self_check_in", "tv", "workspace", "balcony", "near_tube", "games", "coffee_machine", "cot", "high_chair"],
       check_in_info: CHECK_IN_FORM,
-      house_rules:
-        "No smoking inside the apartment\nNo parties, events or gatherings\nPlease keep noise to a minimum, especially late at night, out of respect for neighbours\nOnly guests included on the booking may stay at the property\nPlease treat the apartment, furniture and amenities with care and leave everything as you found it\nPlease use the balcony responsibly and avoid excessive noise outside\nDo not move furniture or equipment between rooms\nPlease report any damage, issues or maintenance concerns as soon as possible\nPlease keep the building and shared areas clean and quiet\nMake sure doors are securely locked when leaving the apartment",
+      house_rules: `${HOUSE_RULES}\n${BALCONY_RULES}`,
       images: photos(
         "wembley-stadium-view-apartment",
         "32BAL 25L 26L 24L 27D 28D 29D 30D 31K 38P 42P 21G 33BAL 34B 35B 37B 36W 39B2 40B2 41B2 43BA 44BA 45BA 46H 47H 48H 01BAL 22G 23G 16P 17P 02DD 03KD 04KD 05KD 06KD 07L 08L 09L 10L 11X 12BD 13BD 14W 15BD 18BAD 19BAD 20BAD",

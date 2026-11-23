@@ -1,4 +1,5 @@
 import { getDb } from "./db";
+import { CANCELLATION } from "../content/launch";
 
 export type SiteSettings = {
   brandName: string;
@@ -81,11 +82,7 @@ export const DEFAULTS = {
   booking: {
     holdMinutes: 30,
     maxAdvanceMonths: 18,
-    fullRefundDays: 30,
-    partialRefundDays: 14,
-    partialRefundPercent: 50,
-    cancellationSummary:
-      "Full refund if you cancel at least 30 days before check-in. 50% refund between 14 and 30 days. No refund within 14 days of arrival.",
+    ...CANCELLATION,
   } satisfies BookingSettings,
   payments: {
     bankTransferEnabled: false,
