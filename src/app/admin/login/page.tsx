@@ -9,7 +9,8 @@ import { LoginForm } from "./LoginForm";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Owner sign in", robots: { index: false, follow: false } };
 
-export default async function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ reset?: string }> }) {
+  const sp = await searchParams;
   if (await getAdmin()) redirect("/admin");
   const demo = !!getDb().prepare("SELECT 1 FROM admin_users WHERE must_change_password = 1 AND email = 'owner@example.com'").get();
   return (
@@ -19,7 +20,7 @@ export default async function LoginPage() {
         <div className="card p-8">
           <h1 className="font-display text-2xl">Owner dashboard</h1>
           <p className="mb-6 mt-1 text-sm text-ink-muted">Sign in to manage your homes and bookings.</p>
-          <LoginForm demoHint={demo} />
+          <LoginForm demoHint={demo} resetDone={sp.reset === "1"} />
         </div>
       </div>
     </main>

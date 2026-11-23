@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { login } from "./actions";
 import { SubmitButton } from "@/components/SubmitButton";
 
-export function LoginForm({ demoHint }: { demoHint: boolean }) {
+export function LoginForm({ demoHint, resetDone = false }: { demoHint: boolean; resetDone?: boolean }) {
   const [error, action] = useActionState(login, null);
   return (
     <form action={action} className="space-y-5">
@@ -16,8 +17,10 @@ export function LoginForm({ demoHint }: { demoHint: boolean }) {
         <label htmlFor="password" className="label">Password</label>
         <input id="password" name="password" type="password" autoComplete="current-password" required className="input" />
       </div>
+      {resetDone && !error && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">Password changed. Sign in with your new password.</p>}
       {error && <p role="alert" className="rounded-xl bg-danger-50 p-3 text-sm text-danger-700">{error}</p>}
       <SubmitButton className="btn-primary w-full" pendingLabel="Signing in…">Sign in</SubmitButton>
+      <p className="text-center text-sm"><Link href="/admin/forgot" className="text-ink-soft underline">Forgot your password?</Link></p>
       {demoHint && (
         <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-700">
           Demo login: <strong>owner@example.com</strong> / <strong>change-me-now</strong>. You&apos;ll be asked to set a new password after signing in.

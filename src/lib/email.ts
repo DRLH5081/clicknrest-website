@@ -243,3 +243,16 @@ export async function sendEnquiryNotice(e: { name: string; email: string; phone:
   );
   await sendEmail({ to: site.ownerNotificationEmail, subject: `Website enquiry from ${e.name}`, ...m });
 }
+
+export async function sendAdminPasswordReset(to: string, url: string) {
+  const m = layout(
+    "Reset your dashboard password",
+    [
+      "Someone (hopefully you) asked to reset the password for the owner dashboard.",
+      "The link below works once and expires in 30 minutes. If you didn't ask for this, you can ignore this email and nothing will change.",
+    ],
+    [],
+    { label: "Choose a new password", url },
+  );
+  await sendEmail({ to, subject: "Reset your dashboard password", ...m });
+}

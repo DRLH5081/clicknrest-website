@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
 import { getDb } from "./db";
-import { sessionSecret, verifyPassword } from "./tokens";
+import { sessionSecret, verifyPassword, hashPassword, sha256 } from "./tokens";
 
 const ADMIN_COOKIE = "fs_admin";
 const GUEST_COOKIE = "fs_guest";
@@ -99,4 +99,39 @@ export async function hasGuestAccess(reference: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+// ---------------------------------------------------------------- password reset
+
+/** Ties a reset link to the current password, so it stops working once the password changes. */
+const pwStamp = (hash: string) => sha256("reset:" + hash).slice(0, 16);
+
+export async function createPasswordResetToken(email: string): Promise<{ email: string; token: string } | null> {
+  const row = getDb().prepare("SELECT id, email, password_hash FROM admin_users WHERE email = ?").get(email.trim().toLowerCase()) as
+    | { id: number; email: string; password_hash: string }
+    | undefined;
+  if (!row) return null;
+  const token = await new SignJWT({ sub: String(row.id), purpose: "reset", pw: pwStamp(row.password_hash) })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("30m")
+    .sign(sessionSecret());
+  return { email: row.email, token };
+}
+
+/** Returns the admin id the reset token belongs to, or null if invalid, expired or already used. */
+export async function checkPasswordResetToken(token: string): Promise<number | null> {
+  try {
+    const { payload } = await jwtVerify(token, sessionSecret(), { algorithms: ["HS256"] });
+    if (payload.purpose !== "reset") return null;
+    const row = getDb().prepare("SELECT password_hash FROM admin_users WHERE id = ?").get(Number(payload.sub)) as { password_hash: string } | undefined;
+    if (!row || payload.pw !== pwStamp(row.password_hash)) return null;
+    return Number(payload.sub);
+  } catch {
+    return null;
+  }
+}
+
+export function setAdminPassword(id: number, password: string) {
+  getDb().prepare("UPDATE admin_users SET password_hash = ?, must_change_password = 0 WHERE id = ?").run(hashPassword(password), id);
 }
