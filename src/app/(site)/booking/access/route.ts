@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { siteUrl } from "@/lib/site-url";
 import { getBookingByRef, checkAccessToken } from "@/lib/bookings";
 import { grantGuestAccess, rateLimit } from "@/lib/auth";
 import { clientIp } from "@/lib/client-ip";
@@ -11,8 +12,8 @@ export async function GET(req: Request) {
   const ip = await clientIp();
   const b = rateLimit(`access:${ip}`, 30) ? getBookingByRef(ref) : null;
   if (!b || !checkAccessToken(b, token)) {
-    return NextResponse.redirect(new URL("/booking/manage?error=link", url));
+    return NextResponse.redirect(new URL("/booking/manage?error=link", siteUrl()));
   }
   await grantGuestAccess(b.reference);
-  return NextResponse.redirect(new URL(`/booking/${b.reference}`, url));
+  return NextResponse.redirect(new URL(`/booking/${b.reference}`, siteUrl()));
 }
