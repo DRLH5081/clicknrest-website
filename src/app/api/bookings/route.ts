@@ -23,7 +23,7 @@ const Body = z.object({
 });
 
 export async function POST(req: Request) {
-  if (await blockedByPrivateMode()) return Response.json({ error: "This website is not open yet." }, { status: 403 });
+  if (await blockedByPrivateMode({ allowPreview: false })) return Response.json({ error: "Bookings open when the website launches. This is a preview." }, { status: 403 });
   const ip = await clientIp();
   if (!rateLimit(`book:${ip}`, 20, 10 * 60_000)) {
     return NextResponse.json({ ok: false, message: "Too many attempts. Please wait a few minutes and try again." }, { status: 429 });

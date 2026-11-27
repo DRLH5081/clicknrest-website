@@ -4,7 +4,7 @@ import { Footer } from "@/components/site/Footer";
 import { getSetting } from "@/lib/settings";
 import { paymentMode } from "@/lib/payments";
 import { getAdmin } from "@/lib/auth";
-import { isSitePrivate } from "@/lib/private-mode";
+import { isSitePrivate, hasPreviewAccess } from "@/lib/private-mode";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +12,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const site = getSetting("site");
   const isPrivate = isSitePrivate();
   const admin = isPrivate ? await getAdmin() : null;
+  const preview = isPrivate && !admin ? await hasPreviewAccess() : false;
 
-  if (isPrivate && !admin) {
+  if (isPrivate && !admin && !preview) {
     return (
       <main id="main" className="flex min-h-screen flex-col items-center justify-center bg-ink px-4 text-center text-white">
         <h1 className="font-display text-4xl">{site.brandName}</h1>
@@ -35,7 +36,12 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   return (
     <>
-      {isPrivate && (
+      {preview && (
+        <p className="bg-amber-100 px-4 py-2 text-center text-sm text-amber-800">
+          Preview: you&apos;re seeing the website before it launches. Booking is switched off for now.
+        </p>
+      )}
+      {isPrivate && admin && (
         <p className="bg-amber-100 px-4 py-2 text-center text-sm text-amber-800">
           Private mode: only you can see this site. The public sees a &quot;Coming soon&quot; page.{" "}
           <Link href="/admin/settings?tab=site" className="font-semibold underline">Change</Link>

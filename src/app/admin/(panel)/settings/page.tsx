@@ -7,8 +7,8 @@ import { siteUrl } from "@/lib/site-url";
 import { PageHeader, Panel, Field, Flash } from "@/components/admin/ui";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Icon } from "@/components/Icon";
-import { saveSettings, changePassword, setPrivateMode } from "../../actions";
-import { isSitePrivate } from "@/lib/private-mode";
+import { saveSettings, changePassword, setPrivateMode, resetPreviewLink } from "../../actions";
+import { isSitePrivate, previewToken } from "@/lib/private-mode";
 
 export const metadata = { title: "Settings" };
 
@@ -45,6 +45,16 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <form action={setPrivateMode.bind(null, !isSitePrivate())}>
             <SubmitButton>{isSitePrivate() ? "Open website to the public" : "Make website private"}</SubmitButton>
           </form>
+          {isSitePrivate() && (
+            <div className="mt-6 border-t border-sand-200 pt-5">
+              <p className="text-sm font-semibold">Preview link</p>
+              <p className="mt-1 text-sm text-ink-muted">Send this link to anyone you want to see the website before launch. They can look around and check prices, but can&apos;t book. It works for 30 days on their device.</p>
+              <input readOnly value={`${siteUrl()}/preview?key=${previewToken()}`} className="input mt-3 font-mono text-xs" aria-label="Preview link" />
+              <form action={resetPreviewLink} className="mt-3">
+                <SubmitButton className="btn-outline btn-sm" confirm="Create a new preview link? Anyone with the old link will lose access.">Create a new link (turns off the old one)</SubmitButton>
+              </form>
+            </div>
+          )}
         </Panel>
       )}
 

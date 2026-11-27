@@ -634,3 +634,10 @@ export async function setPrivateMode(on: boolean) {
   refreshPublic();
   go("/admin/settings?tab=site", { ok: on ? "Website is now private. The public sees a Coming soon page." : "Website is now open to the public." });
 }
+
+export async function resetPreviewLink() {
+  await requireAdmin();
+  const { resetPreviewToken } = await import("@/lib/private-mode");
+  resetPreviewToken();
+  go("/admin/settings?tab=site", { ok: "New preview link created. The old link no longer works." });
+}
