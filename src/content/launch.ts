@@ -3,7 +3,7 @@
  * Used by the seed for new databases and applied once to the live database by applyLaunchContent().
  */
 
-export const LAUNCH_CONTENT_VERSION = 5;
+export const LAUNCH_CONTENT_VERSION = 6;
 
 export const HOUSE_RULES = [
   "Please check in and check out at the standard times stated on your booking. If you need an earlier check-in or later check-out, this can be arranged with us in advance. Please stick to the time agreed.",

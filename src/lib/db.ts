@@ -309,6 +309,19 @@ function applyLaunchContent(db: Database.Database) {
         if (f && (isPlaceholder(f.answer) || /Pay by Bank|Dogs welcome/.test(f.answer))) db.prepare("UPDATE faqs SET question = ?, answer = ? WHERE id = ?").run(u.q, u.a, f.id);
       }
     }
+    if (v < 6) {
+      // New public phone number (owner, 2026-11-27); only replaces the old temporary number.
+      const row = db.prepare("SELECT value FROM settings WHERE key = 'site'").get() as { value: string } | undefined;
+      if (row) {
+        try {
+          const site = JSON.parse(row.value);
+          if (typeof site.contactPhone === "string" && site.contactPhone.replace(/\s/g, "") === "07485531484") {
+            site.contactPhone = "07385 772508";
+            db.prepare("UPDATE settings SET value = ? WHERE key = 'site'").run(JSON.stringify(site));
+          }
+        } catch {}
+      }
+    }
     db.prepare("INSERT INTO settings (key, value) VALUES ('launch_content_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(String(LAUNCH_CONTENT_VERSION));
   })();
 }

@@ -75,7 +75,7 @@ export const DEFAULTS = {
     ownerName: "Click'N'Rest",
     ownerNotificationEmail: "Inquiries@clicknrest.com",
     contactEmail: "Inquiries@clicknrest.com",
-    contactPhone: "07485 531484",
+    contactPhone: "07385 772508",
     contactAddress: "", // Run remotely: no public address (Hannah, 2026-11-17)
     contactHours: "Every day, 9am to 9pm",
     instagramUrl: "",
