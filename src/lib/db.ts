@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { LAUNCH_CONTENT_VERSION, HOUSE_RULES, BALCONY_RULES, LEGAL_PAGES, CANCELLATION_FAQ, CANCELLATION, PHOTO_SWAPS } from "../content/launch";
+import { LAUNCH_CONTENT_VERSION, HOUSE_RULES, BALCONY_RULES, LEGAL_PAGES, CANCELLATION_FAQ, CANCELLATION, PHOTO_SWAPS, HOME_COPY, ABOUT_PAGE, FAQ_UPDATES } from "../content/launch";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -266,21 +266,48 @@ function applyLaunchContent(db: Database.Database) {
       }
       db.prepare("UPDATE faqs SET answer = ? WHERE question = 'What is your cancellation policy?'").run(CANCELLATION_FAQ);
     }
-    const home = db.prepare("SELECT value FROM settings WHERE key = 'home'").get() as { value: string } | undefined;
-    if (home) {
+    const readHome = () => {
+      const row = db.prepare("SELECT value FROM settings WHERE key = 'home'").get() as { value: string } | undefined;
+      if (!row) return null;
       try {
-        const h = JSON.parse(home.value);
+        return JSON.parse(row.value);
+      } catch {
+        return null;
+      }
+    };
+    const saveHome = (h: unknown) => db.prepare("UPDATE settings SET value = ? WHERE key = 'home'").run(JSON.stringify(h));
+    if (v < 4) {
+      const h = readHome();
+      if (h) {
         const swap = (k: unknown) => (typeof k === "string" && PHOTO_SWAPS[k]) || k;
         h.heroImage = swap(h.heroImage);
         h.introImage = swap(h.introImage);
-        if (Array.isArray(h.experiences))
-          h.experiences = h.experiences.map((x: { image?: string }) => ({
-            ...x,
-            image: swap(x.image),
-          }));
+        if (Array.isArray(h.experiences)) h.experiences = h.experiences.map((x: { image?: string }) => ({ ...x, image: swap(x.image) }));
         for (const f of ["heroIntro", "ctaBody"]) if (typeof h[f] === "string") h[f] = h[f].replace("Ten self-catering", "Nine self-catering").replace("all ten apartments", "all nine apartments");
-        db.prepare("UPDATE settings SET value = ? WHERE key = 'home'").run(JSON.stringify(h));
-      } catch {}
+        saveHome(h);
+      }
+    }
+    if (v < 5) {
+      // Replace only text that is still placeholder wording, so the owner's own edits are kept.
+      const isPlaceholder = (t: unknown) => typeof t === "string" && /placeholder/i.test(t);
+      const h = readHome();
+      if (h) {
+        if (isPlaceholder(h.heroIntro)) h.heroIntro = HOME_COPY.heroIntro;
+        if (isPlaceholder(h.introBody)) h.introBody = HOME_COPY.introBody;
+        if (isPlaceholder(h.experiencesIntro)) h.experiencesIntro = HOME_COPY.experiencesIntro;
+        if (Array.isArray(h.experiences))
+          h.experiences = h.experiences.map((x: { body?: string }, i: number) => (isPlaceholder(x.body) && HOME_COPY.experienceBodies[i] ? { ...x, body: HOME_COPY.experienceBodies[i] } : x));
+        saveHome(h);
+      }
+      const about = db.prepare("SELECT body, meta_description FROM pages WHERE slug = 'about'").get() as { body: string; meta_description: string } | undefined;
+      if (about && isPlaceholder(about.body)) db.prepare("UPDATE pages SET body = ?, is_draft_content = 0, updated_at = datetime('now') WHERE slug = 'about'").run(ABOUT_PAGE.body);
+      if (about && isPlaceholder(about.meta_description)) db.prepare("UPDATE pages SET meta_description = ? WHERE slug = 'about'").run(ABOUT_PAGE.meta_description);
+      const faq = db.prepare("SELECT id, answer FROM faqs WHERE question = ?");
+      for (const u of FAQ_UPDATES) {
+        const f = faq.get(u.match) as { id: number; answer: string } | undefined;
+        // Only the seeded answers: the payment one mentions Pay by Bank, the pets one a filter no apartment uses.
+        if (f && (isPlaceholder(f.answer) || /Pay by Bank|Dogs welcome/.test(f.answer))) db.prepare("UPDATE faqs SET question = ?, answer = ? WHERE id = ?").run(u.q, u.a, f.id);
+      }
     }
     db.prepare("INSERT INTO settings (key, value) VALUES ('launch_content_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(String(LAUNCH_CONTENT_VERSION));
   })();

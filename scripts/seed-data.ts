@@ -1,5 +1,5 @@
 import { REAL_LISTINGS } from "./real-properties";
-import { HOUSE_RULES, LEGAL_PAGES, CANCELLATION_FAQ } from "../src/content/launch";
+import { HOUSE_RULES, LEGAL_PAGES, CANCELLATION_FAQ, ABOUT_PAGE, FAQ_UPDATES } from "../src/content/launch";
 
 /**
  * DEMONSTRATION CONTENT. Every name, description and price below is a
@@ -217,7 +217,7 @@ export function seedProperties(year: number): SeedProperty[] {
   ];
 }
 
-export const SEED_FAQS: { q: string; a: string; c: string }[] = [
+export const SEED_FAQS: { q: string; a: string; c: string }[] = ([
   { c: "Booking", q: "How do I book?", a: "Choose a home, select your dates and number of guests, and you'll see the full price before you pay. Booking takes a few minutes and you don't need an account." },
   { c: "Booking", q: "Is the price I see the final price?", a: "Yes. The total shown before you pay includes the nightly rate and any applicable taxes. There are no cleaning fees and no booking fees." },
   { c: "Booking", q: "Is there a minimum stay?", a: "No, you can book any of our homes for just one night." },
@@ -229,7 +229,10 @@ export const SEED_FAQS: { q: string; a: string; c: string }[] = [
   { c: "Your stay", q: "What time are check-in and check-out?", a: "Check-in is from 3pm (15:00) and check-out is by 10am (10:00) at all our homes." },
   { c: "Your stay", q: "Are pets allowed?", a: "Some of our homes welcome dogs. Use the “Dogs welcome” filter on the Stays page, and please mention your dog when booking." },
   { c: "Your stay", q: "Are linen and towels provided?", a: "Yes, all homes include fresh bed linen and towels, plus essentials to get you started." },
-];
+] as { q: string; a: string; c: string }[]).map((f) => {
+  const u = FAQ_UPDATES.find((x) => x.match === f.q);
+  return u ? { ...f, q: u.q, a: u.a } : f;
+});
 
 const DRAFT_NOTE = "**Draft content for review.** This page contains placeholder wording only and is not legal advice. Have it reviewed and replaced before launch.";
 
@@ -238,9 +241,9 @@ export const SEED_PAGES = [
     slug: "about",
     title: "About us",
     meta_title: "About us",
-    meta_description: "Placeholder: the story behind our small collection of independently owned holiday homes.",
+    meta_description: ABOUT_PAGE.meta_description,
     is_draft: 0,
-    body: `## A small collection, cared for personally\n\nThis is placeholder text for your story. Explain how the collection began, why you chose each home, and what you love about the places they're in.\n\n## How we look after guests\n\n- Placeholder: every home is cleaned and checked by our own team between stays.\n- Placeholder: local recommendations from people who live nearby.\n- Placeholder: one point of contact from booking to check-out.\n\n## Booking directly\n\nWhen you book with us you deal directly with the owner. There are no platform fees, and you can call or email us with any question.`,
+    body: ABOUT_PAGE.body,
   },
   ...LEGAL_PAGES.map((p) => ({ ...p, is_draft: 0 })),
 ];

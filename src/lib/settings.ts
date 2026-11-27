@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import { CANCELLATION } from "../content/launch";
+import { CANCELLATION, HOME_COPY } from "../content/launch";
 
 export type SiteSettings = {
   brandName: string;
@@ -102,12 +102,10 @@ export const DEFAULTS = {
   home: {
     heroEyebrow: "Click. Stay. Rest.",
     heroHeadline: "Comfortable London apartments, booked in a few clicks",
-    heroIntro:
-      "Nine self-catering apartments across Wembley, Cockfosters, Harrow and Hounslow, with fast Wi-Fi, self check-in and direct prices. Placeholder copy: edit it from the dashboard.",
+    heroIntro: HOME_COPY.heroIntro,
     heroImage: "wembley-stadium-view-apartment-32",
     introTitle: "Hosted by us, from booking to checkout",
-    introBody:
-      "Placeholder copy for your story. Say who runs Click'N'Rest, why guests choose your apartments over a hotel, and the touches they can expect, from fresh linen and towels to local tips for each area.",
+    introBody: HOME_COPY.introBody,
     introImage: "wembley-high-rise-apartment-25",
     benefitsTitle: "Why book direct",
     benefits: [
@@ -117,11 +115,11 @@ export const DEFAULTS = {
       { title: "Secure payment", body: "Card payments handled by a trusted payment provider. We never store card details." },
     ],
     experiencesTitle: "Around our apartments",
-    experiencesIntro: "Placeholder ideas for each area. Swap these for your own recommendations.",
+    experiencesIntro: HOME_COPY.experiencesIntro,
     experiences: [
-      { title: "Events at Wembley", body: "Placeholder: concerts and match days at Wembley Stadium and OVO Arena.", image: "wembley-high-rise-apartment-11" },
-      { title: "Green space", body: "Placeholder: Trent Park near Cockfosters and the views from Harrow on the Hill.", image: "wembley-balcony-apartment-25" },
-      { title: "Easy connections", body: "Placeholder: Tube links into central London, and Heathrow close to Hounslow.", image: "wembley-family-apartment-37" },
+      { title: "Events at Wembley", body: HOME_COPY.experienceBodies[0], image: "wembley-high-rise-apartment-11" },
+      { title: "Green space", body: HOME_COPY.experienceBodies[1], image: "wembley-balcony-apartment-25" },
+      { title: "Easy connections", body: HOME_COPY.experienceBodies[2], image: "wembley-family-apartment-37" },
     ],
     ctaTitle: "Click. Stay. Rest.",
     ctaBody: "Browse all nine apartments, check live availability and book in a few minutes.",
