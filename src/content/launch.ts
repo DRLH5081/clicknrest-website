@@ -3,7 +3,7 @@
  * Used by the seed for new databases and applied once to the live database by applyLaunchContent().
  */
 
-export const LAUNCH_CONTENT_VERSION = 3;
+export const LAUNCH_CONTENT_VERSION = 4;
 
 export const HOUSE_RULES = [
   "Please check in and check out at the standard times stated on your booking. If you need an earlier check-in or later check-out, this can be arranged with us in advance. Please stick to the time agreed.",
@@ -166,3 +166,12 @@ In the unlikely event we have to cancel, you'll get a full refund.
 We recommend travel insurance that covers cancellation, in case your plans change.`,
   },
 ];
+
+/** Placeholder illustration keys replaced by real property photos (owner request, 2026-11-27). */
+export const PHOTO_SWAPS: Record<string, string> = {
+  "home-hero": "wembley-stadium-view-apartment-32",
+  about: "wembley-high-rise-apartment-25",
+  "exp-coast": "wembley-high-rise-apartment-11",
+  "exp-walks": "wembley-balcony-apartment-25",
+  "exp-food": "wembley-family-apartment-37",
+};

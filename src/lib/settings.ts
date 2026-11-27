@@ -103,12 +103,12 @@ export const DEFAULTS = {
     heroEyebrow: "Click. Stay. Rest.",
     heroHeadline: "Comfortable London apartments, booked in a few clicks",
     heroIntro:
-      "Ten self-catering apartments across Wembley, Cockfosters, Harrow and Hounslow, with fast Wi-Fi, self check-in and direct prices. Placeholder copy: edit it from the dashboard.",
-    heroImage: "home-hero",
+      "Nine self-catering apartments across Wembley, Cockfosters, Harrow and Hounslow, with fast Wi-Fi, self check-in and direct prices. Placeholder copy: edit it from the dashboard.",
+    heroImage: "wembley-stadium-view-apartment-32",
     introTitle: "Hosted by us, from booking to checkout",
     introBody:
       "Placeholder copy for your story. Say who runs Click'N'Rest, why guests choose your apartments over a hotel, and the touches they can expect, from fresh linen and towels to local tips for each area.",
-    introImage: "about",
+    introImage: "wembley-high-rise-apartment-25",
     benefitsTitle: "Why book direct",
     benefits: [
       { title: "No platform booking fees", body: "The price you see is the price you pay, with no service fee added at checkout." },
@@ -119,12 +119,12 @@ export const DEFAULTS = {
     experiencesTitle: "Around our apartments",
     experiencesIntro: "Placeholder ideas for each area. Swap these for your own recommendations.",
     experiences: [
-      { title: "Events at Wembley", body: "Placeholder: concerts and match days at Wembley Stadium and OVO Arena.", image: "exp-coast" },
-      { title: "Green space", body: "Placeholder: Trent Park near Cockfosters and the views from Harrow on the Hill.", image: "exp-walks" },
-      { title: "Easy connections", body: "Placeholder: Tube links into central London, and Heathrow close to Hounslow.", image: "exp-food" },
+      { title: "Events at Wembley", body: "Placeholder: concerts and match days at Wembley Stadium and OVO Arena.", image: "wembley-high-rise-apartment-11" },
+      { title: "Green space", body: "Placeholder: Trent Park near Cockfosters and the views from Harrow on the Hill.", image: "wembley-balcony-apartment-25" },
+      { title: "Easy connections", body: "Placeholder: Tube links into central London, and Heathrow close to Hounslow.", image: "wembley-family-apartment-37" },
     ],
     ctaTitle: "Click. Stay. Rest.",
-    ctaBody: "Browse all ten apartments, check live availability and book in a few minutes.",
+    ctaBody: "Browse all nine apartments, check live availability and book in a few minutes.",
   } satisfies HomeContent,
 };
 

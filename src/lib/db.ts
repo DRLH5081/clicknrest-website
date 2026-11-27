@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { LAUNCH_CONTENT_VERSION, HOUSE_RULES, BALCONY_RULES, LEGAL_PAGES, CANCELLATION_FAQ, CANCELLATION } from "../content/launch";
+import { LAUNCH_CONTENT_VERSION, HOUSE_RULES, BALCONY_RULES, LEGAL_PAGES, CANCELLATION_FAQ, CANCELLATION, PHOTO_SWAPS } from "../content/launch";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -245,22 +245,43 @@ function migrate(db: Database.Database) {
 /** One-off: brings an existing database up to the owner-approved house rules, cancellation rules and legal pages. */
 function applyLaunchContent(db: Database.Database) {
   const row = db.prepare("SELECT value FROM settings WHERE key = 'launch_content_version'").get() as { value: string } | undefined;
-  if (Number(row?.value ?? 0) >= LAUNCH_CONTENT_VERSION) return;
+  const v = Number(row?.value ?? 0);
+  if (v >= LAUNCH_CONTENT_VERSION) return;
   db.transaction(() => {
-    db.prepare("UPDATE properties SET house_rules = ?, updated_at = datetime('now')").run(HOUSE_RULES);
-    db.prepare("UPDATE properties SET house_rules = ? WHERE slug = 'wembley-stadium-view-apartment'").run(`${HOUSE_RULES}\n${BALCONY_RULES}`);
-    const upsertPage = db.prepare(
-      `INSERT INTO pages (slug, title, body, meta_title, meta_description, is_draft_content, updated_at) VALUES (?, ?, ?, ?, ?, 0, datetime('now'))
+    if (v < 3) {
+      db.prepare("UPDATE properties SET house_rules = ?, updated_at = datetime('now')").run(HOUSE_RULES);
+      db.prepare("UPDATE properties SET house_rules = ? WHERE slug = 'wembley-stadium-view-apartment'").run(`${HOUSE_RULES}\n${BALCONY_RULES}`);
+      const upsertPage = db.prepare(
+        `INSERT INTO pages (slug, title, body, meta_title, meta_description, is_draft_content, updated_at) VALUES (?, ?, ?, ?, ?, 0, datetime('now'))
        ON CONFLICT(slug) DO UPDATE SET title = excluded.title, body = excluded.body, meta_title = excluded.meta_title, meta_description = excluded.meta_description, is_draft_content = 0, updated_at = excluded.updated_at`,
-    );
-    for (const p of LEGAL_PAGES) upsertPage.run(p.slug, p.title, p.body, p.meta_title, p.meta_description);
-    const booking = db.prepare("SELECT value FROM settings WHERE key = 'booking'").get() as { value: string } | undefined;
-    if (booking) {
-      let cur = {};
-      try { cur = JSON.parse(booking.value); } catch {}
-      db.prepare("UPDATE settings SET value = ? WHERE key = 'booking'").run(JSON.stringify({ ...cur, ...CANCELLATION }));
+      );
+      for (const p of LEGAL_PAGES) upsertPage.run(p.slug, p.title, p.body, p.meta_title, p.meta_description);
+      const booking = db.prepare("SELECT value FROM settings WHERE key = 'booking'").get() as { value: string } | undefined;
+      if (booking) {
+        let cur = {};
+        try {
+          cur = JSON.parse(booking.value);
+        } catch {}
+        db.prepare("UPDATE settings SET value = ? WHERE key = 'booking'").run(JSON.stringify({ ...cur, ...CANCELLATION }));
+      }
+      db.prepare("UPDATE faqs SET answer = ? WHERE question = 'What is your cancellation policy?'").run(CANCELLATION_FAQ);
     }
-    db.prepare("UPDATE faqs SET answer = ? WHERE question = 'What is your cancellation policy?'").run(CANCELLATION_FAQ);
+    const home = db.prepare("SELECT value FROM settings WHERE key = 'home'").get() as { value: string } | undefined;
+    if (home) {
+      try {
+        const h = JSON.parse(home.value);
+        const swap = (k: unknown) => (typeof k === "string" && PHOTO_SWAPS[k]) || k;
+        h.heroImage = swap(h.heroImage);
+        h.introImage = swap(h.introImage);
+        if (Array.isArray(h.experiences))
+          h.experiences = h.experiences.map((x: { image?: string }) => ({
+            ...x,
+            image: swap(x.image),
+          }));
+        for (const f of ["heroIntro", "ctaBody"]) if (typeof h[f] === "string") h[f] = h[f].replace("Ten self-catering", "Nine self-catering").replace("all ten apartments", "all nine apartments");
+        db.prepare("UPDATE settings SET value = ? WHERE key = 'home'").run(JSON.stringify(h));
+      } catch {}
+    }
     db.prepare("INSERT INTO settings (key, value) VALUES ('launch_content_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(String(LAUNCH_CONTENT_VERSION));
   })();
 }
