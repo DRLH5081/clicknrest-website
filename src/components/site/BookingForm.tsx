@@ -138,7 +138,7 @@ export function BookingForm({ slug, checkIn, checkOut, guests, maxGuests, demo, 
           <label htmlFor="message" className="label">
             Anything we should know? <span className="font-normal text-ink-muted">(optional)</span>
           </label>
-          <textarea id="message" name="message" rows={3} className="input" placeholder="Arrival time, dogs, special occasions…" />
+          <textarea id="message" name="message" rows={3} className="input" placeholder="Arrival time, special occasions…" />
         </div>
       </fieldset>
 

@@ -1,5 +1,5 @@
 import { REAL_LISTINGS } from "./real-properties";
-import { HOUSE_RULES, LEGAL_PAGES, CANCELLATION_FAQ, ABOUT_PAGE, FAQ_UPDATES } from "../src/content/launch";
+import { HOUSE_RULES, LEGAL_PAGES, CANCELLATION_FAQ, ABOUT_PAGE, FAQ_UPDATES, LOCKBOX_SLUGS, checkInInfoFor, CHECK_IN_FAQ } from "../src/content/launch";
 
 /**
  * DEMONSTRATION CONTENT. Every name, description and price below is a
@@ -202,6 +202,14 @@ const HOUNSLOW_SKYLINE: Partial<SeedProperty> = {
   ],
 };
 
+/** Lockbox self check-in in Cockfosters and Hounslow, concierge in Wembley and Harrow (client, 2026-11-28). */
+function withCheckInArrangements(p: SeedProperty): SeedProperty {
+  const lockbox = LOCKBOX_SLUGS.includes(p.slug);
+  const amenities = p.amenities.filter((a) => a !== "self_check_in" && a !== "concierge");
+  amenities.splice(4, 0, lockbox ? "self_check_in" : "concierge");
+  return { ...p, check_in_info: checkInInfoFor(p.slug), amenities };
+}
+
 export function seedProperties(year: number): SeedProperty[] {
   // Hannah's real listings (2026-11-03). No cleaning fees, 1-night minimum. Nightly rates are placeholders until they come from Smoobu.
   return [
@@ -214,7 +222,7 @@ export function seedProperties(year: number): SeedProperty[] {
       const base = apartment(area, 1, "one", { year, rate, cleaning, amenities: [], featured: !!listing.featured, offset: [0, 0] });
       return { ...base, region: "London", ...listing } as SeedProperty;
     }),
-  ];
+  ].map(withCheckInArrangements);
 }
 
 export const SEED_FAQS: { q: string; a: string; c: string }[] = ([
@@ -226,7 +234,7 @@ export const SEED_FAQS: { q: string; a: string; c: string }[] = ([
   { c: "Payment", q: "When will I be charged?", a: "Placeholder answer: the full amount is due when you book, by card or Pay by Bank. Edit this answer if you take a deposit instead." },
   { c: "Cancellations", q: "What is your cancellation policy?", a: CANCELLATION_FAQ },
   { c: "Cancellations", q: "How do I cancel or change my booking?", a: "Use the link in your confirmation email, or find your booking with your reference and email address on the Manage booking page, then send a cancellation request. For changes, contact us directly." },
-  { c: "Your stay", q: "What time are check-in and check-out?", a: "Check-in is from 3pm (15:00) and check-out is by 10am (10:00) at all our homes." },
+  { c: "Your stay", q: "What time are check-in and check-out?", a: CHECK_IN_FAQ },
   { c: "Your stay", q: "Are pets allowed?", a: "Some of our homes welcome dogs. Use the “Dogs welcome” filter on the Stays page, and please mention your dog when booking." },
   { c: "Your stay", q: "Are linen and towels provided?", a: "Yes, all homes include fresh bed linen and towels, plus essentials to get you started." },
 ] as { q: string; a: string; c: string }[]).map((f) => {

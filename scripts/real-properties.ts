@@ -4,7 +4,7 @@
  * Anything marked "CHECK" was not stated in her listing text and is a best guess.
  */
 import type { SeedProperty } from "./seed-data";
-import { HOUSE_RULES, BALCONY_RULES } from "../src/content/launch";
+import { HOUSE_RULES, BALCONY_RULES, CHECK_IN_FORM_TEXT } from "../src/content/launch";
 
 /** Alt text by photo kind. */
 const ALT: Record<string, string> = {
@@ -41,8 +41,7 @@ function photos(prefix: string, spec: string) {
     });
 }
 
-const CHECK_IN_FORM =
-  "Before your stay, all guests complete a quick online check-in form. This is a standard step to verify bookings, meet legal hosting requirements and keep everyone safe. Your information is stored securely, used only for these purposes, and never shared with third parties except where required by law.";
+const CHECK_IN_FORM = CHECK_IN_FORM_TEXT;
 
 const RULES = HOUSE_RULES;
 

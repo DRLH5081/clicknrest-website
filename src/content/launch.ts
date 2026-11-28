@@ -3,7 +3,7 @@
  * Used by the seed for new databases and applied once to the live database by applyLaunchContent().
  */
 
-export const LAUNCH_CONTENT_VERSION = 6;
+export const LAUNCH_CONTENT_VERSION = 7;
 
 export const HOUSE_RULES = [
   "Please check in and check out at the standard times stated on your booking. If you need an earlier check-in or later check-out, this can be arranged with us in advance. Please stick to the time agreed.",
@@ -178,9 +178,9 @@ export const PHOTO_SWAPS: Record<string, string> = {
 
 /** Final site copy replacing placeholder wording (owner request, 2026-11-27). */
 export const HOME_COPY = {
-  heroIntro: "Nine self-catering apartments across Wembley, Cockfosters, Harrow and Hounslow, with fast Wi-Fi, self check-in and no booking fees when you book direct.",
+  heroIntro: "Nine self-catering apartments across Wembley, Cockfosters, Harrow and Hounslow, with fast Wi-Fi, easy check-in from 3pm and no booking fees when you book direct.",
   introBody:
-    "Click'N'Rest looks after nine apartments across north and west London. Each one is yours alone, with a fully equipped kitchen, fresh linen and towels, and self check-in from 3pm. If you need anything before or during your stay, you deal with us directly, every day from 9am to 9pm.",
+    "Click'N'Rest looks after nine apartments across north and west London. Each one is yours alone, with a fully equipped kitchen, fresh linen and towels, and check-in from 3pm. If you need anything before or during your stay, you deal with us directly, every day from 9am to 9pm.",
   experiencesIntro: "Whether you're here for a big night at Wembley, a quieter break or a flight out of Heathrow, there's an apartment in the right place.",
   experienceBodies: [
     "Wembley Stadium and OVO Arena Wembley are about a 10-minute walk from our Wembley apartments, so concerts and match days are easy.",
@@ -193,12 +193,13 @@ export const ABOUT_PAGE = {
   meta_description: "Click'N'Rest: nine self-catering apartments across Wembley, Cockfosters, Harrow and Hounslow, booked directly with no booking fees.",
   body: `## A small collection, cared for personally
 
-Click'N'Rest is a collection of nine self-catering apartments across Wembley, Cockfosters, Harrow and Hounslow. Each one is a whole apartment to yourself, with a fully equipped kitchen, fast Wi-Fi and self check-in, so you can settle in from 3pm without waiting around for keys.
+Click'N'Rest is a collection of nine self-catering apartments across Wembley, Cockfosters, Harrow and Hounslow. Each one is a whole apartment to yourself, with a fully equipped kitchen, fast Wi-Fi and check-in from 3pm.
 
 ## How we look after guests
 
 - Every apartment is cleaned and made up with fresh linen and towels before you arrive.
-- A quick online check-in before your stay, then self check-in on the day.
+- A quick online check-in before your stay, then collect your keys from a lockbox or the building's concierge.
+- Earlier check-in or later check-out can often be arranged for £15 per hour. Just message us.
 - One point of contact from booking to check-out, every day from 9am to 9pm.
 
 ## Booking directly
@@ -211,3 +212,15 @@ export const FAQ_UPDATES: { match: string; q: string; a: string }[] = [
   { match: "When will I be charged?", q: "When will I be charged?", a: "The full amount is taken when you book, and your booking is confirmed as soon as the payment goes through." },
   { match: "Are pets allowed?", q: "Are pets allowed?", a: "Please contact us before booking if you'd like to bring a pet, so we can check whether the apartment is suitable." },
 ];
+
+/** Check-in arrangements by building (client, 2026-11-28). */
+export const CHECK_IN_FORM_TEXT =
+  "Before your stay, all guests complete a quick online check-in form. This is a standard step to verify bookings, meet legal hosting requirements and keep everyone safe. Your information is stored securely, used only for these purposes, and never shared with third parties except where required by law.";
+export const EARLY_LATE_TEXT = "Need an earlier check-in or a later check-out? We can often arrange it for £15 per hour, subject to availability. Just message us to arrange it.";
+export const LOCKBOX_ARRIVAL = "Self check-in with a lockbox, so you can arrive any time from 3pm.";
+export const CONCIERGE_ARRIVAL =
+  "Keys are collected from the building's concierge, available until 10pm. Arriving after 10pm? Let us know in advance and we'll leave your key in a lockbox.";
+export const LOCKBOX_SLUGS = ["cockfosters-arcade-apartment", "cockfosters-games-room-apartment", "hounslow-skyline-apartment", "hounslow-central-apartment"];
+export const checkInInfoFor = (slug: string) => `${LOCKBOX_SLUGS.includes(slug) ? LOCKBOX_ARRIVAL : CONCIERGE_ARRIVAL} ${CHECK_IN_FORM_TEXT} ${EARLY_LATE_TEXT}`;
+export const CHECK_IN_FAQ =
+  "Check-in is from 3pm (15:00) and check-out is by 10am (10:00). In Cockfosters and Hounslow you check in yourself with a lockbox, any time after 3pm. In Wembley and Harrow the building's concierge hands over keys until 10pm; if you'll arrive later, let us know in advance and we'll leave your key in a lockbox. Earlier check-in or later check-out can often be arranged for £15 per hour, subject to availability: just message us.";

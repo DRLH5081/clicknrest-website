@@ -73,6 +73,15 @@ export default async function BookPage({ params, searchParams }: { params: Promi
               </p>
               <p className="mt-1.5">{getSetting("booking").cancellationSummary}</p>
             </div>
+            <div className="mt-4 rounded-2xl bg-gold-50 p-4 text-sm text-ink-soft">
+              <p className="flex items-center gap-2 font-semibold text-ink">
+                <Icon name="clock" className="h-4 w-4" /> Early check-in or late check-out
+              </p>
+              <p className="mt-1.5">
+                We can often arrange an earlier check-in or a later check-out for £15 per hour, subject to availability. Once you&apos;ve booked, message us on{" "}
+                <a className="font-semibold text-ink underline" href={`sms:${getSetting("site").contactPhone.replace(/[^+\d]/g, "")}`}>{getSetting("site").contactPhone}</a> and we&apos;ll set it up for you.
+              </p>
+            </div>
           </aside>
         </div>
       )}

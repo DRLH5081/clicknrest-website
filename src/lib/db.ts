@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { LAUNCH_CONTENT_VERSION, HOUSE_RULES, BALCONY_RULES, LEGAL_PAGES, CANCELLATION_FAQ, CANCELLATION, PHOTO_SWAPS, HOME_COPY, ABOUT_PAGE, FAQ_UPDATES } from "../content/launch";
+import { LAUNCH_CONTENT_VERSION, HOUSE_RULES, BALCONY_RULES, LEGAL_PAGES, CANCELLATION_FAQ, CANCELLATION, PHOTO_SWAPS, HOME_COPY, ABOUT_PAGE, FAQ_UPDATES, LOCKBOX_SLUGS, CHECK_IN_FORM_TEXT, checkInInfoFor, CHECK_IN_FAQ } from "../content/launch";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -320,6 +320,39 @@ function applyLaunchContent(db: Database.Database) {
             db.prepare("UPDATE settings SET value = ? WHERE key = 'site'").run(JSON.stringify(site));
           }
         } catch {}
+      }
+    }
+    if (v < 7) {
+      // Check-in arrangements by building: lockbox in Cockfosters and Hounslow, concierge in Wembley and Harrow (client, 2026-11-28).
+      const props = db.prepare("SELECT id, slug, amenities, check_in_info FROM properties").all() as { id: number; slug: string; amenities: string; check_in_info: string }[];
+      for (const p of props) {
+        let am: string[] = [];
+        try {
+          am = JSON.parse(p.amenities);
+        } catch {}
+        const lockbox = LOCKBOX_SLUGS.includes(p.slug);
+        am = am.filter((a) => a !== "self_check_in" && a !== "concierge");
+        am.splice(Math.min(4, am.length), 0, lockbox ? "self_check_in" : "concierge");
+        // Keep any check-in text the owner wrote; replace only the shared form text the site was seeded with.
+        const info = p.check_in_info.trim() === CHECK_IN_FORM_TEXT || p.check_in_info.trim() === "" ? checkInInfoFor(p.slug) : p.check_in_info;
+        db.prepare("UPDATE properties SET amenities = ?, check_in_info = ?, updated_at = datetime('now') WHERE id = ?").run(JSON.stringify(am), info, p.id);
+      }
+      db.prepare("UPDATE faqs SET answer = ? WHERE question = 'What time are check-in and check-out?' AND answer LIKE 'Check-in is from 3pm (15:00) and check-out is by 10am (10:00) at all our homes%'").run(CHECK_IN_FAQ);
+      const h = readHome();
+      if (h) {
+        if (typeof h.heroIntro === "string") h.heroIntro = h.heroIntro.replace("with fast Wi-Fi, self check-in and no booking fees", "with fast Wi-Fi, easy check-in from 3pm and no booking fees");
+        if (typeof h.introBody === "string") h.introBody = h.introBody.replace("fresh linen and towels, and self check-in from 3pm.", "fresh linen and towels, and check-in from 3pm.");
+        saveHome(h);
+      }
+      const about = db.prepare("SELECT body FROM pages WHERE slug = 'about'").get() as { body: string } | undefined;
+      if (about) {
+        const body = about.body
+          .replace("with a fully equipped kitchen, fast Wi-Fi and self check-in, so you can settle in from 3pm without waiting around for keys.", "with a fully equipped kitchen, fast Wi-Fi and check-in from 3pm.")
+          .replace(
+            "- A quick online check-in before your stay, then self check-in on the day.",
+            "- A quick online check-in before your stay, then collect your keys from a lockbox or the building's concierge.\n- Earlier check-in or later check-out can often be arranged for £15 per hour. Just message us.",
+          );
+        if (body !== about.body) db.prepare("UPDATE pages SET body = ?, updated_at = datetime('now') WHERE slug = 'about'").run(body);
       }
     }
     db.prepare("INSERT INTO settings (key, value) VALUES ('launch_content_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(String(LAUNCH_CONTENT_VERSION));
